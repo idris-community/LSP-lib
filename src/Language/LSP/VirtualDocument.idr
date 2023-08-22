@@ -1,4 +1,4 @@
-module Server.VirtualDocument
+module Language.LSP.VirtualDocument
 
 -- The VirtualDocument is the version of the document that the LSP server maintains
 -- based on the incoming DidChange events. It should mirror the actively edited but
@@ -69,7 +69,7 @@ Pos : Type
 Pos = (Nat, Nat)
 
 ||| Line length as defined in LSP, newline character is not counted in.
-||| 
+|||
 ||| See more:
 ||| https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#position
 lineLength : String -> Nat
@@ -378,7 +378,7 @@ tests = do
     wordPosTestCase (0,10) "" ""
     wordPosTestCase (1,0)  "" ""
     wordPosTestCase (1,10) "" ""
-  
+
   do -- New line
     wordPosTestCase (0,0)  "\n" ""
     wordPosTestCase (0,10) "\n" ""
@@ -392,7 +392,7 @@ tests = do
     wordPosTestCase (0,10) " " ""
     wordPosTestCase (1,0)  " " ""
     wordPosTestCase (1,10) " " ""
-  
+
   do -- One line without newline
     --         0         1   1
     --         012345678901234

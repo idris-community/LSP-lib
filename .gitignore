@@ -16,5 +16,3 @@
 
 **/build
 /tests/**/output
-
-src/Server/Generated.idr

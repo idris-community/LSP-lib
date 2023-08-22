@@ -1,7 +1,7 @@
 ||| Logging utilities for the LSP server implementation.
 |||
 ||| (C) The Idris Community, 2023
-module Server.Severity
+module Language.LSP.Severity
 
 import Data.String
 
@@ -11,7 +11,7 @@ import Data.String
 ||| Levels are roughly categorised as follow:
 ||| - Debug    Messages targeted only for developing purposes
 ||| - Info     Messages for progress without unexpected behaviour or errors
-||| - Warning  Messages for unsupported requests or wrong configurations 
+||| - Warning  Messages for unsupported requests or wrong configurations
 ||| - Error    Messages for either server or compiler error which are unexpected but recoverable
 ||| - Critical Messages for error that require immediate stopping of the server
 public export

@@ -18,7 +18,7 @@ import Data.String
 import Data.String.Extra
 import Data.String.Parser
 import Data.Vect
-import Protocol.Hex
+import Data.Hex
 
 listElem : Eq a => a -> List a -> Bool
 listElem = elem
@@ -61,7 +61,7 @@ record URI where
 
 export
 Show URI where
-  show uri = 
+  show uri =
     let auth = maybe "" ((++ "//") . show) uri.authority
         query = if uri.query == "" then "" else '?' <+ uri.query
         fragment = if uri.fragment == "" then "" else '#' <+ uri.fragment
@@ -101,7 +101,7 @@ pctEncoded = do
   ignore $ char '%'
   x <- satisfy isHexDigit
   y <- satisfy isHexDigit
-  let Just d = fromHexChars [y, x]
+  let Just d = fromHexBigEndian "\{cast {to = String} x}\{cast {to = String} y}"
     | Nothing => fail "Cannot convert \{show x}\{show y} to a hex number"
   pure $ chr (cast d)
 

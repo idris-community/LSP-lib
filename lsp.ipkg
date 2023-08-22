@@ -1,16 +1,15 @@
-package lsp
+package lsp-lib
 version = 0.5.0
 
 opts = "-Wno-shadowing"
 
-depends = idris2, contrib
+depends = contrib
 
 sourcedir = "src"
 
-main = Server.Main
-executable = idris2-lsp
-
-modules = Data.URI
+modules = Data.Hex
+        , Data.OneOf
+        , Data.URI
         , Language.JSON.Interfaces
         , Language.LSP.Message
         , Language.LSP.Message.CallHierarchy
@@ -54,5 +53,6 @@ modules = Data.URI
         , Language.LSP.Message.Utils
         , Language.LSP.Message.Window
         , Language.LSP.Message.Workspace
-
-prebuild = "make src/Server/Generated.idr"
+        , Language.LSP.Severity
+        , Language.LSP.Utils
+        , Language.LSP.VirtualDocument
