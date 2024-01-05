@@ -4,8 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
 
-    # tmp url:
-    idris.url = "github:mattpolzin/Idris2/nix-idrisapi";
+    idris.url = "github:idris-lang/Idris2";
   };
 
   outputs = { self, nixpkgs, idris }:
@@ -16,7 +15,6 @@
     in
     { packages = lib.genAttrs systems (system:
       let
-        idrisPkgs = idris.packages.${system};
         buildIdris = idris.buildIdris.${system};
 
         lspLibPkg = buildIdris {
@@ -26,6 +24,7 @@
         };
       in rec {
         lsp-lib = lspLibPkg.library { };
+        lsp-lib-with-src = lspLibPkg.library { withSource = true; };
         default = lsp-lib;
       }
     );
