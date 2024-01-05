@@ -16,3 +16,6 @@
 
 **/build
 /tests/**/output
+
+# Nix builds
+result
