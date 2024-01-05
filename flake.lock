@@ -19,7 +19,9 @@
       "inputs": {
         "flake-utils": "flake-utils",
         "idris-emacs-src": "idris-emacs-src",
-        "nixpkgs": "nixpkgs"
+        "nixpkgs": [
+          "nixpkgs"
+        ]
       },
       "locked": {
         "lastModified": 1704491951,
@@ -53,21 +55,6 @@
     },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1671864851,
-        "narHash": "sha256-Z3L5MSWOyTdVTIVBrLEh2HwgDYGcqf1gnGYFx+7gb/k=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "27392c3cb3ddc39123426aa88fe186aa0ea1c253",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
-    "nixpkgs_2": {
-      "locked": {
         "lastModified": 1704060006,
         "narHash": "sha256-DJqxVZf35Gaw07Vt0qT1cS0pqfzZiuB+WfLTJNJdbgY=",
         "owner": "nixos",
@@ -84,7 +71,7 @@
     "root": {
       "inputs": {
         "idris": "idris",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs"
       }
     }
   },

@@ -5,6 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs";
 
     idris.url = "github:idris-lang/Idris2";
+    idris.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { self, nixpkgs, idris }:
