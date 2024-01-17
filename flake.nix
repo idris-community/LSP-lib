@@ -19,7 +19,7 @@
         buildIdris = idris.buildIdris.${system};
 
         lspLibPkg = buildIdris {
-          projectName = "LSP-lib";
+          projectName = "lsp-lib";
           src = ./.;
           idrisLibraries = [ ];
         };
