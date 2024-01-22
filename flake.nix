@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
 
-    idris.url = "github:mattpolzin/Idris2/easier-buildIdris-customizations";
+    idris.url = "github:idris-lang/Idris2";
     idris.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -25,9 +25,9 @@
           idrisLibraries = [ ];
         };
       in rec {
-        lsp-lib = lspLibPkg.library { };
-        lsp-lib-with-src = lspLibPkg.library { withSource = true; };
-        default = lsp-lib;
+        lspLib = lspLibPkg.library { };
+        lspLibWithSrc = lspLibPkg.library { withSource = true; };
+        default = lspLib;
       }
     );
   };
