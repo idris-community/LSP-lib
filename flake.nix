@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs";
 
-    idris.url = "github:idris-lang/Idris2";
+    idris.url = "github:mattpolzin/Idris2/easier-buildIdris-customizations";
     idris.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -19,7 +19,8 @@
         buildIdris = idris.buildIdris.${system};
 
         lspLibPkg = buildIdris {
-          projectName = "LSP-lib";
+          ipkgName = "lsp-lib";
+          version = "0.1.0";
           src = ./.;
           idrisLibraries = [ ];
         };
