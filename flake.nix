@@ -19,14 +19,15 @@
         buildIdris = idris.buildIdris.${system};
 
         lspLibPkg = buildIdris {
-          projectName = "lsp-lib";
+          ipkgName = "lsp-lib";
+          version = "0.1.0";
           src = ./.;
           idrisLibraries = [ ];
         };
       in rec {
-        lsp-lib = lspLibPkg.library { };
-        lsp-lib-with-src = lspLibPkg.library { withSource = true; };
-        default = lsp-lib;
+        lspLib = lspLibPkg.library { };
+        lspLibWithSrc = lspLibPkg.library { withSource = true; };
+        default = lspLib;
       }
     );
   };
