@@ -10,16 +10,6 @@ import Language.LSP.Message.Derive
 
 %default total
 
-public export
-Eq JSON where
-  JNull        == JNull        = True
-  (JBoolean x) == (JBoolean y) = x == y
-  (JNumber x)  == (JNumber y)  = x == y
-  (JString x)  == (JString y)  = x == y
-  (JArray xs)  == (JArray ys)  = assert_total $ xs == ys
-  (JObject xs) == (JObject ys) = assert_total $ xs == ys
-  _ == _ = False
-
 ||| Singleton type that models `null` in JSON.
 public export
 data Null = MkNull
