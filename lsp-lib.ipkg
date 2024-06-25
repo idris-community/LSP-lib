@@ -3,7 +3,9 @@ version = 0.5.0
 
 opts = "-Wno-shadowing"
 
-depends = contrib
+langversion >= 0.7.0
+
+depends = contrib >= 0.7.0
 
 sourcedir = "src"
 
