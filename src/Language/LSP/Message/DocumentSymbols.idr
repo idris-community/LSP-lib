@@ -187,7 +187,7 @@ ToJSON DocumentSymbol where
                        , (MkPair "detail" . toJSON) <$> detail
                        , Just ("kind", toJSON kind)
                        , (MkPair "tags" . toJSON) <$> tags
-                       , Just ("deprecated", toJSON deprecated)
+                       , (MkPair "deprecated" . toJSON) <$> deprecated
                        , Just ("range", toJSON range)
                        , Just ("selectionRange", toJSON selectionRange)
                        , (MkPair "children" . toJSON) <$> children
