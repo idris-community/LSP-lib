@@ -1,7 +1,5 @@
 module Language.LSP.Message.DocumentLink
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Location
 import Language.LSP.Message.Progress
 import Language.LSP.Message.TextDocument
@@ -18,7 +16,7 @@ record DocumentLinkClientCapabilities where
   constructor MkDocumentLinkClientCapabilities
   dynamicRegistration : Maybe Bool
   tooltipSupport      : Maybe Bool
-%runElab deriveJSON defaultOpts `{DocumentLinkClientCapabilities}
+%runElab derive "DocumentLinkClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_documentLink
 public export
@@ -26,7 +24,7 @@ record DocumentLinkOptions where
   constructor MkDocumentLinkOptions
   workDoneProgress : Maybe Bool
   resolveProvider  : Maybe Bool
-%runElab deriveJSON defaultOpts `{DocumentLinkOptions}
+%runElab derive "DocumentLinkOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_documentLink
 public export
@@ -35,7 +33,7 @@ record DocumentLinkRegistrationOptions where
   workDoneProgress : Maybe Bool
   resolveProvider  : Maybe Bool
   documentSelector : OneOf [DocumentSelector, Null]
-%runElab deriveJSON defaultOpts `{DocumentLinkRegistrationOptions}
+%runElab derive "DocumentLinkRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_documentLink
 public export
@@ -44,7 +42,7 @@ record DocumentLinkParams where
   workDoneToken      : Maybe ProgressToken
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
-%runElab deriveJSON defaultOpts `{DocumentLinkParams}
+%runElab derive "DocumentLinkParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_documentLink
 public export
@@ -54,4 +52,4 @@ record DocumentLink where
   target  : Maybe DocumentURI
   tooltip : Maybe String
   data_   : Maybe JSON
-%runElab deriveJSON ({renames := [("data_", "data")]} defaultOpts) `{DocumentLink}
+%runElab derive "DocumentLink" [FromJSONLSP, ToJSONLSP]

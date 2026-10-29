@@ -1,6 +1,5 @@
 module Language.LSP.Message.ClientCapabilities
 
-import Language.JSON
 import Language.LSP.Message.CallHierarchy
 import Language.LSP.Message.Cancel
 import Language.LSP.Message.CodeAction
@@ -9,7 +8,6 @@ import Language.LSP.Message.Command
 import Language.LSP.Message.Completion
 import Language.LSP.Message.Declaration
 import Language.LSP.Message.Definition
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Diagnostics
 import Language.LSP.Message.DocumentColor
 import Language.LSP.Message.DocumentFormatting
@@ -72,7 +70,7 @@ record TextDocumentClientCapabilities where
   callHierarchy      : Maybe CallHierarchyClientCapabilities
   semanticTokens     : Maybe SemanticTokensClientCapabilities
   moniker            : Maybe MonikerClientCapabilities
-%runElab deriveJSON ({renames := [("implementation_", "implementation")]} defaultOpts) `{TextDocumentClientCapabilities}
+%runElab derive "TextDocumentClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -85,7 +83,7 @@ record FileOperationsWorkspaceClientCapabilities where
   willRename          : Maybe Bool
   didDelete           : Maybe Bool
   willDelete          : Maybe Bool
-%runElab deriveJSON defaultOpts `{FileOperationsWorkspaceClientCapabilities}
+%runElab derive "FileOperationsWorkspaceClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -102,7 +100,7 @@ record WorkspaceClientCapabilities where
   semanticTokens         : Maybe SemanticTokensWorkspaceClientCapabilities
   codeLens               : Maybe CodeLensWorkspaceClientCapabilities
   fileOperations         : Maybe FileOperationsWorkspaceClientCapabilities
-%runElab deriveJSON defaultOpts `{WorkspaceClientCapabilities}
+%runElab derive "WorkspaceClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -111,7 +109,7 @@ record WindowClientCapabilities where
   workDoneProgress : Maybe Bool
   showMessage      : Maybe ShowMessageRequestClientCapabilities
   showDocument     : Maybe ShowDocumentClientCapabilities
-%runElab deriveJSON defaultOpts `{WindowClientCapabilities}
+%runElab derive "WindowClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -119,7 +117,7 @@ record GeneralClientCapabilities where
   constructor MkGeneralClientCapabilities
   regularExpressions : Maybe RegularExpressionsClientCapabilities
   markdown           : Maybe MarkdownClientCapabilities
-%runElab deriveJSON defaultOpts `{GeneralClientCapabilities}
+%runElab derive "GeneralClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -130,4 +128,4 @@ record ClientCapabilities where
   window       : Maybe WindowClientCapabilities
   general      : Maybe GeneralClientCapabilities
   experimental : Maybe JSON
-%runElab deriveJSON defaultOpts `{ClientCapabilities}
+%runElab derive "ClientCapabilities" [FromJSONLSP, ToJSONLSP]

@@ -1,7 +1,5 @@
 module Language.LSP.Message.CallHierarchy
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.DocumentSymbols
 import Language.LSP.Message.Location
 import Language.LSP.Message.Progress
@@ -18,14 +16,14 @@ public export
 record CallHierarchyClientCapabilities where
   constructor MkCallHierarchyClientCapabilities
   dynamicRegistration : Maybe Bool
-%runElab deriveJSON defaultOpts `{CallHierarchyClientCapabilities}
+%runElab derive "CallHierarchyClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_prepareCallHierarchy
 public export
 record CallHierarchyOptions where
   constructor MkCallHierarchyOptions
   workDoneProgress : Maybe Bool
-%runElab deriveJSON defaultOpts `{CallHierarchyOptions}
+%runElab derive "CallHierarchyOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_prepareCallHierarchy
 public export
@@ -34,7 +32,7 @@ record CallHierarchyRegistrationOptions where
   workDoneProgress : Maybe Bool
   documentSelector : OneOf [DocumentSelector, Null]
   id               : Maybe String
-%runElab deriveJSON defaultOpts `{CallHierarchyRegistrationOptions}
+%runElab derive "CallHierarchyRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_prepareCallHierarchy
 public export
@@ -42,7 +40,7 @@ record CallHierarchyParams where
   constructor MkCallHierarchyParams
   workDoneToken : Maybe ProgressToken
   textDocument  : TextDocumentIdentifier
-%runElab deriveJSON defaultOpts `{CallHierarchyParams}
+%runElab derive "CallHierarchyParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_prepareCallHierarchy
 public export
@@ -56,7 +54,8 @@ record CallHierarchyItem where
   range          : Range
   selectionRange : Range
   data_          : Maybe JSON
-%runElab deriveJSON ({renames := [("data_", "data")]} defaultOpts) `{CallHierarchyItem}
+
+%runElab derive "CallHierarchyItem" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#callHierarchy_incomingCalls
 public export
@@ -65,7 +64,7 @@ record CallHierarchyIncomingCallsParams where
   workDoneToken      : Maybe ProgressToken
   partialResultToken : Maybe ProgressToken
   item               : CallHierarchyItem
-%runElab deriveJSON defaultOpts `{CallHierarchyIncomingCallsParams}
+%runElab derive "CallHierarchyIncomingCallsParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#callHierarchy_incomingCalls
 public export
@@ -73,7 +72,7 @@ record CallHierarchyIncomingCall where
   constructor MkCallHierarchyIncomingCall
   from       : CallHierarchyItem
   fromRanges : List Range
-%runElab deriveJSON defaultOpts `{CallHierarchyIncomingCall}
+%runElab derive "CallHierarchyIncomingCall" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#callHierarchy_outgoingCalls
 public export
@@ -82,7 +81,7 @@ record CallHierarchyOutgoingCallsParams where
   workDoneToken      : Maybe ProgressToken
   partialResultToken : Maybe ProgressToken
   item               : CallHierarchyItem
-%runElab deriveJSON defaultOpts `{CallHierarchyOutgoingCallsParams}
+%runElab derive "CallHierarchyOutgoingCallsParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#callHierarchy_outgoingCalls
 public export
@@ -90,4 +89,4 @@ record CallHierarchyOutgoingCall where
   constructor MkCallHierarchyOutgoingCall
   to         : CallHierarchyItem
   fromRanges : List Range
-%runElab deriveJSON defaultOpts `{CallHierarchyOutgoingCall}
+%runElab derive "CallHierarchyOutgoingCall" [FromJSONLSP, ToJSONLSP]

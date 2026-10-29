@@ -1,8 +1,6 @@
 module Language.LSP.Message.Initialize
 
-import Language.JSON
 import Language.LSP.Message.ClientCapabilities
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Progress
 import Language.LSP.Message.ServerCapabilities
 import Language.LSP.Message.Trace
@@ -20,7 +18,7 @@ namespace InitializeParams
   record ClientInfo where
     name    : String
     version : Maybe String
-  %runElab deriveJSON defaultOpts `{ClientInfo}
+  %runElab derive "ClientInfo" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -36,7 +34,7 @@ record InitializeParams where
   trace                 : Maybe Trace
   workspaceFolders      : Maybe (OneOf [List WorkspaceFolder, Null])
   workDoneToken         : Maybe ProgressToken
-%runElab deriveJSON defaultOpts `{InitializeParams}
+%runElab derive "InitializeParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -44,17 +42,17 @@ record InitializeResult where
   constructor MkInitializeResult
   capabilities : ServerCapabilities
   serverInfo   : Maybe ServerInfo
-%runElab deriveJSON defaultOpts `{InitializeResult}
+%runElab derive "InitializeResult" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
 record InitializeError where
   constructor MkInitializeError
   retry : Bool
-%runElab deriveJSON defaultOpts `{InitializeError}
+%runElab derive "InitializeError" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialized
 public export
 record InitializedParams where
   constructor MkInitializedParams
-%runElab deriveJSON defaultOpts `{InitializedParams}
+%runElab derive "InitializedParams" [FromJSONLSP, ToJSONLSP]

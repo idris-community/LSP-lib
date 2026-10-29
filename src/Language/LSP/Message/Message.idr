@@ -4,7 +4,6 @@
 module Language.LSP.Message.Message
 
 import Data.OneOf
-import Language.JSON
 import Language.LSP.Message.CallHierarchy
 import Language.LSP.Message.Cancel
 import Language.LSP.Message.CodeAction
@@ -13,7 +12,6 @@ import Language.LSP.Message.Command
 import Language.LSP.Message.Completion
 import Language.LSP.Message.Declaration
 import Language.LSP.Message.Definition
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Diagnostics
 import Language.LSP.Message.DocumentColor
 import Language.LSP.Message.DocumentFormatting
@@ -41,6 +39,7 @@ import Language.LSP.Message.Utils
 import Language.LSP.Message.Window
 import Language.LSP.Message.Workspace
 import Language.Reflection
+import JSON.RPC
 
 %language ElabReflection
 %default total
@@ -118,6 +117,7 @@ MessageParams CancelRequest                       = CancelParams
 MessageParams Progress                            = OneOf [WorkDoneProgressBegin, WorkDoneProgressReport, WorkDoneProgressEnd]
 
 -- Hacky, but avoids having to carry a FromJSON (MessageParams method) inside sigma types
+export
 findParamsImpl : (method : Method from type) -> FromJSON (MessageParams method)
 findParamsImpl Initialize                          = %search
 findParamsImpl Initialized                         = %search
@@ -241,6 +241,7 @@ ResponseResult WorkspaceApplyEdit                  = ApplyWorkspaceEditResponse
 ResponseResult TextDocumentCompletion              = OneOf [List CompletionItem, CompletionList, Null]
 ResponseResult WorkspaceCodeLensRefresh            = Maybe Null
 
+export
 findNotificationImpl : (method : Method from Notification) -> ToJSON (MessageParams method)
 findNotificationImpl Initialized = %search
 findNotificationImpl Exit = %search
@@ -262,6 +263,7 @@ findNotificationImpl TextDocumentPublishDiagnostics = %search
 findNotificationImpl CancelRequest = %search
 findNotificationImpl Progress = %search
 
+export
 findRequestImpl : (method : Method from Request) -> ToJSON (MessageParams method)
 findRequestImpl Initialize = %search
 findRequestImpl Shutdown = %search
@@ -313,6 +315,7 @@ findRequestImpl WorkspaceApplyEdit = %search
 findRequestImpl TextDocumentCompletion = %search
 findRequestImpl WorkspaceCodeLensRefresh = %search
 
+export
 findResultImpl : (method : Method from Request) -> ToJSON (ResponseResult method)
 findResultImpl Initialize = %search
 findResultImpl Shutdown = %search
@@ -364,55 +367,14 @@ findResultImpl WorkspaceApplyEdit = %search
 findResultImpl TextDocumentCompletion = %search
 findResultImpl WorkspaceCodeLensRefresh = %search
 
-||| Parse parameters
-||| Since the params are sometimes optional we must parse Maybe JSON
-||| TODO hacky replace with something better
-export
-fromMaybeJSONParameters : (method : Method from type) -> Maybe JSON -> Maybe (MessageParams method)
-fromMaybeJSONParameters Exit arg =
-  pure $ join $ arg >>= (fromJSON @{findParamsImpl Exit})
-fromMaybeJSONParameters Shutdown arg =
-  pure $ join $ arg >>= (fromJSON @{findParamsImpl Shutdown})
-fromMaybeJSONParameters WorkspaceSemanticTokensRefresh arg =
-  pure $ join $ arg >>= (fromJSON @{findParamsImpl WorkspaceSemanticTokensRefresh})
-fromMaybeJSONParameters WorkspaceWorkspaceFolders arg =
-  pure $ join $ arg >>= (fromJSON @{findParamsImpl WorkspaceWorkspaceFolders})
-fromMaybeJSONParameters WorkspaceCodeLensRefresh arg =
-  pure $ join $ arg >>= (fromJSON @{findParamsImpl WorkspaceCodeLensRefresh})
-fromMaybeJSONParameters method arg = arg >>= (fromJSON @{findParamsImpl method})
-
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#notificationMessage
 public export
-data NotificationMessage : Method from Notification -> Type where
-  MkNotificationMessage : (method : Method from Notification)
-                       -> (params : MessageParams method)
-                       -> NotificationMessage method
+record NotificationMessage (from : MethodFrom) where
+  constructor  MkNotificationMessage
+  jsonrpc : Only (JString "2.0")
+  method : Method from Notification
+  params : MessageParams method
 
-export
-{method : Method from Notification} -> ToJSON (NotificationMessage method) where
-  toJSON (MkNotificationMessage method params) =
-    JObject ([("jsonrpc", JString "2.0"), ("method", toJSON method), ("params", toJSON @{findNotificationImpl method} params)])
-
-export
-FromJSON (from ** method : Method from Notification ** NotificationMessage method) where
-  fromJSON (JObject arg) = do
-    lookup "jsonrpc" arg >>= (guard . (== JString "2.0"))
-    (from ** meth) <- lookup "method" arg >>= fromJSON {a = (from ** Method from Notification)}
-    case meth of
-      Exit => do let par = lookup "params" arg >>= (fromJSON @{findParamsImpl meth})
-                 pure (from ** meth ** MkNotificationMessage meth (join par))
-      _ => do par <- lookup "params" arg >>= (fromJSON @{findParamsImpl meth})
-              pure (from ** meth ** MkNotificationMessage meth par)
-  fromJSON _ = neutral
-
-namespace NotificationMessage
-  export
-  method : {0 m : Method from Notification} -> NotificationMessage m -> Method from Notification
-  method (MkNotificationMessage m _) = m
-
-  export
-  params : {0 method : Method from Notification} -> NotificationMessage method -> MessageParams method
-  params (MkNotificationMessage _ p) = p
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#requestMessage
 public export
@@ -421,33 +383,6 @@ data RequestMessage : Method from Request -> Type where
                   -> (method : Method from Request)
                   -> (params : MessageParams method)
                   -> RequestMessage method
-
-export
-{method : Method from Request} -> ToJSON (RequestMessage method) where
-  toJSON (MkRequestMessage id method params) =
-    JObject ([("jsonrpc", JString "2.0"), ("id", toJSON id), ("method", toJSON method), ("params", toJSON @{findRequestImpl method} params)])
-
-export
-FromJSON (from ** method : Method from Request ** RequestMessage method) where
-  fromJSON (JObject arg) = do
-    lookup "jsonrpc" arg >>= (guard . (== JString "2.0"))
-    id <- lookup "id" arg >>= fromJSON
-    (from ** method) <- lookup "method" arg >>= fromJSON {a = (from ** Method from Request)}
-    case method of
-      Shutdown => do let params = lookup "params" arg >>= (fromJSON @{findParamsImpl method})
-                     pure (from ** method ** MkRequestMessage id method (join params))
-      WorkspaceSemanticTokensRefresh =>
-        do let params = lookup "params" arg >>= (fromJSON @{findParamsImpl method})
-           pure (from ** method ** MkRequestMessage id method (join params))
-      WorkspaceWorkspaceFolders =>
-        do let params = lookup "params" arg >>= (fromJSON @{findParamsImpl method})
-           pure (from ** method ** MkRequestMessage id method (join params))
-      WorkspaceCodeLensRefresh =>
-        do let params = lookup "params" arg >>= (fromJSON @{findParamsImpl method})
-           pure (from ** method ** MkRequestMessage id method (join params))
-      _ => do params <- lookup "params" arg >>= (fromJSON @{findParamsImpl method})
-              pure (from ** method ** MkRequestMessage id method params)
-  fromJSON _ = neutral
 
 namespace RequestMessage
   export
@@ -461,18 +396,6 @@ namespace RequestMessage
   export
   params : {0 method : Method from Request} -> RequestMessage method -> MessageParams method
   params (MkRequestMessage _ _ p) = p
-
-||| Maps the message payload to each type of method.
-public export
-Message : (type : MethodType) -> (Method from type -> Type)
-Message Notification = NotificationMessage
-Message Request = RequestMessage
-
-export
-FromJSON (from ** type ** method : Method from type ** Message type method) where
-  fromJSON arg =
-    (fromJSON arg >>= \(f ** m ** msg) : (from ** method : Method from Request ** RequestMessage method) => pure (f ** _ ** m ** msg))
-      <|> (fromJSON arg >>= \(f ** m ** msg) : (from ** method : Method from Notification ** NotificationMessage method) => pure (f ** _ ** m ** msg))
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#responseMessage
 namespace ErrorCodes
@@ -491,38 +414,22 @@ namespace ErrorCodes
     | LSPReserved Int
     | Custom Int
 
+||| Convert from error codes as they are defined in
+||| LSP to error codes as they are defined in JSONRPC
 export
-ToJSON ErrorCodes where
-  toJSON ParseError             = JNumber (-32700)
-  toJSON InvalidRequest         = JNumber (-32600)
-  toJSON MethodNotFound         = JNumber (-32601)
-  toJSON InvalidParams          = JNumber (-32602)
-  toJSON InternalError          = JNumber (-32603)
-  toJSON ServerNotInitialized   = JNumber (-32002)
-  toJSON UnknownErrorCode       = JNumber (-32001)
-  toJSON ContentModified        = JNumber (-32801)
-  toJSON RequestCancelled       = JNumber (-32800)
-  toJSON (JSONRPCReserved code) = JNumber (cast code)
-  toJSON (LSPReserved code)     = JNumber (cast code)
-  toJSON (Custom code)          = JNumber (cast code)
-
-export
-FromJSON ErrorCodes where
-  -- TODO: Can't match on negative numbers :(, temporary fix until compiler PR.
-  fromJSON (JNumber code) =
-    if code == (-32700) then pure ParseError
-    else if code == (-32600) then pure InvalidRequest
-    else if code == (-32601) then pure MethodNotFound
-    else if code == (-32602) then pure InvalidParams
-    else if code == (-32603) then pure InternalError
-    else if code == (-32002) then pure ServerNotInitialized
-    else if code == (-32001) then pure UnknownErrorCode
-    else if code == (-32801) then pure ContentModified
-    else if code == (-32800) then pure RequestCancelled
-    else if (-32099) <= code && code <= (-32000) then pure (JSONRPCReserved $ cast code)
-    else if (-32899) <= code && code <= (-32800) then pure (LSPReserved $ cast code)
-    else pure (Custom $ cast code)
-  fromJSON _ = neutral
+toErrorCode : ErrorCodes -> ErrorCode
+toErrorCode ParseError = ParseError
+toErrorCode InvalidRequest = InvalidRequest
+toErrorCode MethodNotFound = MethodNotFound
+toErrorCode InvalidParams = InvalidParams
+toErrorCode InternalError = InternalError
+toErrorCode ServerNotInitialized = ServerError (-32002)
+toErrorCode UnknownErrorCode = ServerError (-32001)
+toErrorCode ContentModified = CustomError (-32801)
+toErrorCode RequestCancelled = CustomError (-32800)
+toErrorCode (JSONRPCReserved i) = ServerError (cast i)
+toErrorCode (LSPReserved i) = CustomError (cast i)
+toErrorCode (Custom i) = CustomError (cast i)
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#responseMessage
 public export
@@ -531,37 +438,4 @@ record ResponseError where
   code : ErrorCodes
   message : String
   data_ : JSON
-%runElab deriveJSON ({renames := [("data_", "data")]} defaultOpts) `{ResponseError}
 
-||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#responseMessage
-public export
-data ResponseMessage : Method from type -> Type where
-  Success : (id : OneOf [Int, String, Null]) -> (result : ResponseResult method) -> ResponseMessage method
-  Failure : (id : OneOf [Int, String, Null]) -> (error : ResponseError) -> ResponseMessage method
-
-export
-{method : Method from Request} -> ToJSON (ResponseMessage method) where
-  toJSON (Success id result) =
-    JObject ([("jsonrpc", JString "2.0"), ("id", toJSON id), ("result", toJSON @{findResultImpl method} result)])
-  toJSON (Failure id error) =
-    JObject ([("jsonrpc", JString "2.0"), ("id", toJSON id), ("error", toJSON error)])
-
-export
-FromJSON (ResponseResult method) => FromJSON (ResponseMessage method) where
-  fromJSON (JObject arg) = do
-    lookup "jsonrpc" arg >>= (guard . (== JString "2.0"))
-    id <- lookup "id" arg >>= fromJSON
-    case lookup "result" arg of
-         Just v => Success id <$> fromJSON v
-         Nothing => Failure id <$> (lookup "error" arg >>= fromJSON)
-  fromJSON _ = neutral
-
-namespace ResponseMessage
-  export
-  id : ResponseMessage method -> OneOf [Int, String, Null]
-  id (Success i _) = i
-  id (Failure i _) = i
-
-  export
-  getResponseId : RequestMessage method -> OneOf [Int, String, Null]
-  getResponseId = extend . RequestMessage.id

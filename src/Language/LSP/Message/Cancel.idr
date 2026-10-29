@@ -1,7 +1,5 @@
 module Language.LSP.Message.Cancel
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Utils
 import Language.Reflection
 
@@ -13,4 +11,4 @@ public export
 record CancelParams where
   constructor MkCancelParams
   id : OneOf [Int, String]
-%runElab deriveJSON defaultOpts `{CancelParams}
+%runElab derive "CancelParams" [FromJSONLSP, ToJSONLSP]

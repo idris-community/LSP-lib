@@ -1,8 +1,6 @@
 module Language.LSP.Message.SignatureHelp
 
-import Language.JSON
 import Language.LSP.Message.Location
-import Language.LSP.Message.Derive
 import Language.LSP.Message.URI
 import Language.LSP.Message.Utils
 import Language.LSP.Message.Markup
@@ -12,6 +10,7 @@ import Language.Reflection
 
 %language ElabReflection
 %default total
+%hide Text.Bounds.Position
 
 namespace SignatureHelpClientCapabilities
   ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
@@ -19,7 +18,7 @@ namespace SignatureHelpClientCapabilities
   record SignatureHelpParameterInformation where
     constructor MkSignatureHelpParameterInformation
     labelOffsetSupport : Maybe Bool
-  %runElab deriveJSON defaultOpts `{SignatureHelpParameterInformation}
+  %runElab derive "SignatureHelpParameterInformation" [FromJSONLSP, ToJSONLSP]
 
   ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
   public export
@@ -28,7 +27,7 @@ namespace SignatureHelpClientCapabilities
     documentationFormat    : Maybe (List MarkupKind)
     parameterInformation   : Maybe SignatureHelpParameterInformation
     activeParameterSupport : Maybe Bool
-  %runElab deriveJSON defaultOpts `{SignatureHelpInformation}
+  %runElab derive "SignatureHelpInformation" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -37,7 +36,7 @@ record SignatureHelpClientCapabilities where
   dynamicRegistration  : Maybe Bool
   signatureInformation : Maybe SignatureHelpInformation
   contextSupport       : Maybe Bool
-%runElab deriveJSON defaultOpts `{SignatureHelpClientCapabilities}
+%runElab derive "SignatureHelpClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -46,7 +45,7 @@ record SignatureHelpOptions where
   workDoneProgress    : Maybe Bool
   triggerCharacters   : Maybe (List Char)
   retriggerCharacters : Maybe (List Char)
-%runElab deriveJSON defaultOpts `{SignatureHelpOptions}
+%runElab derive "SignatureHelpOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -56,7 +55,7 @@ record SignatureHelpRegistrationOptions where
   triggerCharacters   : Maybe (List Char)
   retriggerCharacters : Maybe (List Char)
   documentSelector    : OneOf [DocumentSelector, Null]
-%runElab deriveJSON defaultOpts `{SignatureHelpRegistrationOptions}
+%runElab derive "SignatureHelpRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 namespace SignatureHelpTriggerKind
@@ -65,16 +64,16 @@ namespace SignatureHelpTriggerKind
 
 export
 ToJSON SignatureHelpTriggerKind where
-  toJSON Invoked          = JNumber 1
-  toJSON TriggerCharacter = JNumber 2
-  toJSON ContentChange    = JNumber 3
+  toJSON Invoked          = JInteger 1
+  toJSON TriggerCharacter = JInteger 2
+  toJSON ContentChange    = JInteger 3
 
 export
 FromJSON SignatureHelpTriggerKind where
-  fromJSON (JNumber 1) = pure Invoked
-  fromJSON (JNumber 2) = pure TriggerCharacter
-  fromJSON (JNumber 3) = pure ContentChange
-  fromJSON _ = neutral
+  fromJSON (JInteger 1) = pure Invoked
+  fromJSON (JInteger 2) = pure TriggerCharacter
+  fromJSON (JInteger 3) = pure ContentChange
+  fromJSON _ = fail "invalid signature help trigger, 1|2|3"
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -82,7 +81,7 @@ record ParameterInformation where
   constructor MkParameterInformation
   label         : OneOf [String, (Int, Int)]
   documentation : Maybe (OneOf [String, MarkupContent])
-%runElab deriveJSON defaultOpts `{ParameterInformation}
+%runElab derive "ParameterInformation" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -92,7 +91,7 @@ record SignatureInformation where
   documentation   : Maybe (OneOf [String, MarkupContent])
   parameters_     : Maybe (List ParameterInformation)
   activeParameter : Maybe Int
-%runElab deriveJSON ({renames := [("parameters_", "parameters")]} defaultOpts) `{SignatureInformation}
+%runElab derive "SignatureInformation" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -101,7 +100,7 @@ record SignatureHelp where
   signatures      : List SignatureInformation
   activeSignature : Maybe Int
   activeParameter : Maybe Int
-%runElab deriveJSON defaultOpts `{SignatureHelp}
+%runElab derive "SignatureHelp" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -111,7 +110,7 @@ record SignatureHelpContext where
   triggerCharacter    : Maybe Char
   isRetrigger         : Bool
   activeSignatureHelp : Maybe SignatureHelp
-%runElab deriveJSON defaultOpts `{SignatureHelpContext}
+%runElab derive "SignatureHelpContext" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_signatureHelp
 public export
@@ -119,6 +118,6 @@ record SignatureHelpParams where
   constructor MkSignatureHelpParams
   workDoneToken : Maybe ProgressToken
   textDocument  : TextDocumentIdentifier
-  position      : Position
+  position      : Location.Position
   context       : Maybe SignatureHelpContext
-%runElab deriveJSON defaultOpts `{SignatureHelpParams}
+%runElab derive "SignatureHelpParams" [FromJSONLSP, ToJSONLSP]

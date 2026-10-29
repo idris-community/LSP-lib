@@ -1,7 +1,5 @@
 module Language.LSP.Message.Command
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Progress
 import Language.LSP.Message.Utils
 import Language.Reflection
@@ -16,14 +14,14 @@ record Command where
   title     : String
   command   : String
   arguments : Maybe (List JSON)
-%runElab deriveJSON defaultOpts `{Command}
+%runElab derive "Command" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#workspace_executeCommand
 public export
 record ExecuteCommandClientCapabilities where
   constructor MkExecuteCommandClientCapabilities
   dynamicRegistration : Maybe Bool
-%runElab deriveJSON defaultOpts `{ExecuteCommandClientCapabilities}
+%runElab derive "ExecuteCommandClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#workspace_executeCommand
 public export
@@ -31,7 +29,7 @@ record ExecuteCommandOptions where
   constructor MkExecuteCommandOptions
   workDoneProgress : Maybe Bool
   commands         : List String
-%runElab deriveJSON defaultOpts `{ExecuteCommandOptions}
+%runElab derive "ExecuteCommandOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#workspace_executeCommand
 public export
@@ -39,7 +37,7 @@ record ExecuteCommandRegistrationOptions where
   constructor MkExecuteCommandRegistrationOptions
   workDoneProgress : Maybe Bool
   commands         : List String
-%runElab deriveJSON defaultOpts `{ExecuteCommandRegistrationOptions}
+%runElab derive "ExecuteCommandRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#workspace_executeCommand
 public export
@@ -48,4 +46,4 @@ record ExecuteCommandParams where
   partialResultToken : Maybe ProgressToken
   command            : String
   arguments          : Maybe (List JSON)
-%runElab deriveJSON defaultOpts `{ExecuteCommandParams}
+%runElab derive "ExecuteCommandParams" [FromJSONLSP, ToJSONLSP]

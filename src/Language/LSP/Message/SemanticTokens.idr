@@ -1,7 +1,5 @@
 module Language.LSP.Message.SemanticTokens
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Location
 import Language.LSP.Message.Progress
 import Language.LSP.Message.TextDocument
@@ -17,7 +15,7 @@ namespace SemanticTokenClientCapabilities
   record SemanticTokenRequestsFull where
     constructor MkSemanticTokenRequestsFull
     delta : Maybe Bool
-  %runElab deriveJSON defaultOpts `{SemanticTokenRequestsFull}
+  %runElab derive "SemanticTokenRequestsFull" [FromJSONLSP, ToJSONLSP]
 
   ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
   public export
@@ -25,21 +23,12 @@ namespace SemanticTokenClientCapabilities
     constructor MkSemanticTokenRequests
     range : Maybe (OneOf [Bool, ()])
     full  : Maybe (OneOf [Bool, SemanticTokenRequestsFull])
-  %runElab deriveJSON defaultOpts `{SemanticTokenRequests}
+  %runElab derive "SemanticTokenRequests" [FromJSONLSP, ToJSONLSP]
 
-namespace TokenFormat
-  ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
-  public export
-  data TokenFormat = Relative
-
-export
-ToJSON TokenFormat where
-  toJSON Relative = JString "relative"
-
-export
-FromJSON TokenFormat where
-  fromJSON (JString "relative") = pure Relative
-  fromJSON _ = neutral
+||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
+public export
+TokenFormat : Type
+TokenFormat = Only (JString "relative")
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -47,7 +36,7 @@ record SemanticTokensLegend where
   constructor MkSemanticTokensLegend
   tokenTypes     : List String
   tokenModifiers : List String
-%runElab deriveJSON defaultOpts `{SemanticTokensLegend}
+%runElab derive "SemanticTokensLegend" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -60,7 +49,7 @@ record SemanticTokensClientCapabilities where
   formats                 : List TokenFormat
   overlappingTokenSupport : Maybe Bool
   multilineTokenSupport   : Maybe Bool
-%runElab deriveJSON defaultOpts `{SemanticTokensClientCapabilities}
+%runElab derive "SemanticTokensClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -69,7 +58,7 @@ record SemanticTokensOptions where
   legend : SemanticTokensLegend
   range  : Maybe (OneOf [Bool, ()])
   full   : Maybe (OneOf [Bool, SemanticTokenRequestsFull])
-%runElab deriveJSON defaultOpts `{SemanticTokensOptions}
+%runElab derive "SemanticTokensOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -80,7 +69,7 @@ record SemanticTokensRegistrationOptions where
   full             : Maybe (OneOf [Bool, SemanticTokenRequestsFull])
   documentSelector : OneOf [DocumentSelector, Null]
   id               : Maybe Bool
-%runElab deriveJSON defaultOpts `{SemanticTokensRegistrationOptions}
+%runElab derive "SemanticTokensRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -89,7 +78,7 @@ record SemanticTokensParams where
   workDoneToken      : Maybe ProgressToken
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
-%runElab deriveJSON defaultOpts `{SemanticTokensParams}
+%runElab derive "SemanticTokensParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -97,14 +86,14 @@ record SemanticTokens where
   constructor MkSemanticTokens
   resultId : Maybe String
   data_    : List Int
-%runElab deriveJSON ({renames := [("data_", "data")]} defaultOpts) `{SemanticTokens}
+%runElab derive "SemanticTokens" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
 record SemanticTokensPartialResult where
   constructor MkSemanticTokensPartialResult
   data_ : List Int
-%runElab deriveJSON ({renames := [("data_", "data")]} defaultOpts) `{SemanticTokensPartialResult}
+%runElab derive "SemanticTokensPartialResult" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -114,7 +103,7 @@ record SemanticTokensDeltaParams where
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
   previousResultId   : String
-%runElab deriveJSON defaultOpts `{SemanticTokensDeltaParams}
+%runElab derive "SemanticTokensDeltaParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -123,7 +112,7 @@ record SemanticTokensEdit where
   start       : Int
   deleteCount : Int
   data_       : Maybe (List Int)
-%runElab deriveJSON ({renames := [("data_", "data")]} defaultOpts) `{SemanticTokensEdit}
+%runElab derive "SemanticTokensEdit" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -131,14 +120,14 @@ record SemanticTokensDelta where
   constructor MkSemanticTokensDelta
   resultId : Maybe String
   edits    : List SemanticTokensEdit
-%runElab deriveJSON defaultOpts `{SemanticTokensDelta}
+%runElab derive "SemanticTokensDelta" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
 record SemanticTokensDeltaPartialResult where
   constructor MkSemanticTokensDeltaPartialResult
   edits : List SemanticTokensEdit
-%runElab deriveJSON defaultOpts `{SemanticTokensDeltaPartialResult}
+%runElab derive "SemanticTokensDeltaPartialResult" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
@@ -148,11 +137,11 @@ record SemanticTokensRangeParams where
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
   range              : Range
-%runElab deriveJSON defaultOpts `{SemanticTokensRangeParams}
+%runElab derive "SemanticTokensRangeParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_semanticTokens
 public export
 record SemanticTokensWorkspaceClientCapabilities where
   constructor MkSemanticTokensWorkspaceClientCapabilities
   refreshSupport : Maybe Bool
-%runElab deriveJSON defaultOpts `{SemanticTokensWorkspaceClientCapabilities}
+%runElab derive "SemanticTokensWorkspaceClientCapabilities" [FromJSONLSP, ToJSONLSP]

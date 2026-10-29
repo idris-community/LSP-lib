@@ -1,7 +1,5 @@
 module Language.LSP.Message.Definition
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Location
 import Language.LSP.Message.Progress
 import Language.LSP.Message.TextDocument
@@ -10,6 +8,7 @@ import Language.Reflection
 
 %language ElabReflection
 %default total
+%hide Text.Bounds.Position
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_definition
 public export
@@ -17,14 +16,14 @@ record DefinitionClientCapabilities where
   constructor MkDefinitionClientCapabilities
   dynamicRegistration : Maybe Bool
   linkSupport         : Maybe Bool
-%runElab deriveJSON defaultOpts `{DefinitionClientCapabilities}
+%runElab derive "DefinitionClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_definition
 public export
 record DefinitionOptions where
   constructor MkDefinitionOptions
   workDoneProgress : Maybe Bool
-%runElab deriveJSON defaultOpts `{DefinitionOptions}
+%runElab derive "DefinitionOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_definition
 public export
@@ -32,7 +31,7 @@ record DefinitionRegistrationOptions where
   constructor MkDefinitionRegistrationOptions
   workDoneProgress : Maybe Bool
   documentSelector : OneOf [DocumentSelector, Null]
-%runElab deriveJSON defaultOpts `{DefinitionRegistrationOptions}
+%runElab derive "DefinitionRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_definition
 public export
@@ -42,7 +41,7 @@ record DefinitionParams where
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
   position           : Position
-%runElab deriveJSON defaultOpts `{DefinitionParams}
+%runElab derive "DefinitionParams" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_typeDefinition
 public export
@@ -50,14 +49,14 @@ record TypeDefinitionClientCapabilities where
   constructor MkTypeDefinitionClientCapabilities
   dynamicRegistration : Maybe Bool
   linkSupport         : Maybe Bool
-%runElab deriveJSON defaultOpts `{TypeDefinitionClientCapabilities}
+%runElab derive "TypeDefinitionClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_typeDefinition
 public export
 record TypeDefinitionOptions where
   constructor MkTypeDefinitionOptions
   workDoneProgress : Maybe Bool
-%runElab deriveJSON defaultOpts `{TypeDefinitionOptions}
+%runElab derive "TypeDefinitionOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_typeDefinition
 public export
@@ -66,7 +65,7 @@ record TypeDefinitionRegistrationOptions where
   workDoneProgress : Maybe Bool
   documentSelector : OneOf [DocumentSelector, Null]
   id               : Maybe String
-%runElab deriveJSON defaultOpts `{TypeDefinitionRegistrationOptions}
+%runElab derive "TypeDefinitionRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_typeDefinition
 public export
@@ -76,4 +75,4 @@ record TypeDefinitionParams where
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
   position           : Position
-%runElab deriveJSON defaultOpts `{TypeDefinitionParams}
+%runElab derive "TypeDefinitionParams" [FromJSONLSP, ToJSONLSP]

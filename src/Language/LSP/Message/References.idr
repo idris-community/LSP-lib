@@ -1,7 +1,5 @@
 module Language.LSP.Message.References
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Location
 import Language.LSP.Message.Progress
 import Language.LSP.Message.TextDocument
@@ -10,20 +8,21 @@ import Language.Reflection
 
 %language ElabReflection
 %default total
+%hide Text.Bounds.Position
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_references
 public export
 record ReferenceClientCapabilities where
   constructor MkReferenceClientCapabilities
   dynamicRegistration : Maybe Bool
-%runElab deriveJSON defaultOpts `{ReferenceClientCapabilities}
+%runElab derive "ReferenceClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_references
 public export
 record ReferenceOptions where
   constructor MkReferenceOptions
   workDoneProgress : Maybe Bool
-%runElab deriveJSON defaultOpts `{ReferenceOptions}
+%runElab derive "ReferenceOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_references
 public export
@@ -31,14 +30,14 @@ record ReferenceRegistrationOptions where
   constructor MkReferenceRegistrationOptions
   workDoneProgress : Maybe Bool
   documentSelector : OneOf [DocumentSelector, Null]
-%runElab deriveJSON defaultOpts `{ReferenceRegistrationOptions}
+%runElab derive "ReferenceRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_references
 public export
 record ReferenceContext where
   constructor MkReferenceContext
   includeDeclaration : Bool
-%runElab deriveJSON defaultOpts `{ReferenceContext}
+%runElab derive "ReferenceContext" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_references
 public export
@@ -47,6 +46,6 @@ record ReferenceParams where
   workDoneToken      : Maybe ProgressToken
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
-  position           : Position
+  position           : Location.Position
   context            : ReferenceContext
-%runElab deriveJSON defaultOpts `{ReferenceParams}
+%runElab derive "ReferenceParams" [FromJSONLSP, ToJSONLSP]

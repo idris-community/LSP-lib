@@ -1,8 +1,6 @@
 module Language.LSP.Message.Method
 
 import public Data.DPair
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Utils
 import Language.Reflection
 
@@ -160,75 +158,79 @@ methodType CancelRequest = Notification
 methodType Progress = Notification
 
 export
+Show (Method type from) where
+  show Initialize                          = "initialize"
+  show Initialized                         = "initialized"
+  show Shutdown                            = "shutdown"
+  show Exit                                = "exit"
+  show SetTrace                            = "$/setTrace"
+  show WindowWorkDoneProgressCancel        = "window/workDoneProgress/cancel"
+  show WorkspaceDidChangeWorkspaceFolders  = "workspace/didChangeWorkspaceFolders"
+  show WorkspaceDidChangeConfiguration     = "workspace/didChangeConfiguration"
+  show WorkspaceDidChangeWatchedFiles      = "workspace/didChangeWatchedFiles"
+  show WorkspaceSymbol                     = "workspace/symbol"
+  show WorkspaceExecuteCommand             = "workspace/executeCommand"
+  show WorkspaceWillCreateFiles            = "workspace/willCreateFiles"
+  show TextDocumentDidOpen                 = "textDocument/didOpen"
+  show TextDocumentDidChange               = "textDocument/didChange"
+  show TextDocumentWillSave                = "textDocument/willSave"
+  show TextDocumentWillSaveWaitUntil       = "textDocument/willSaveWaitUntil"
+  show TextDocumentDidSave                 = "textDocument/didSave"
+  show TextDocumentDidClose                = "textDocument/didClose"
+  show CompletionItemResolve               = "completionItem/resolve"
+  show TextDocumentHover                   = "textDocument/hover"
+  show TextDocumentSignatureHelp           = "textDocument/signatureHelp"
+  show TextDocumentDeclaration             = "textDocument/declaration"
+  show TextDocumentDefinition              = "textDocument/definition"
+  show TextDocumentTypeDefinition          = "textDocument/typeDefinition"
+  show TextDocumentImplementation          = "textDocument/implementation"
+  show TextDocumentReferences              = "textDocument/references"
+  show TextDocumentDocumentHighlight       = "textDocument/documentHighlight"
+  show TextDocumentDocumentSymbol          = "textDocument/documentSymbol"
+  show TextDocumentCodeAction              = "textDocument/codeAction"
+  show CodeActionResolve                   = "codeAction/resolve"
+  show TextDocumentCodeLens                = "textDocument/codeLens"
+  show CodeLensResolve                     = "codeLens/resolve"
+  show TextDocumentDocumentLink            = "textDocument/documentLink"
+  show DocumentLinkResolve                 = "documentLink/resolve"
+  show TextDocumentDocumentColor           = "textDocument/documentColor"
+  show TextDocumentFormatting              = "textDocument/formatting"
+  show TextDocumentRangeFormatting         = "textDocument/rangeFormatting"
+  show TextDocumentOnTypeFormatting        = "textDocument/onTypeFormatting"
+  show TextDocumentRename                  = "textDocument/rename"
+  show TextDocumentPrepareRename           = "textDocument/prepareRename"
+  show TextDocumentFoldingRange            = "textDocument/foldingRange"
+  show TextDocumentSelectionRange          = "textDocument/selectionRange"
+  show TextDocumentPrepareCallHierarchy    = "textDocument/prepareCallHierarchy"
+  show CallHierarchyIncomingCalls          = "callHierarchy/incomingCalls"
+  show CallHierarchyOutgoingCalls          = "callHierarchy/outgoingCalls"
+  show TextDocumentSemanticTokensFull      = "textDocument/semanticTokens/full"
+  show TextDocumentSemanticTokensFullDelta = "textDocument/semanticTokens/full/delta"
+  show TextDocumentSemanticTokensRange     = "textDocument/semanticTokens/range"
+  show WorkspaceSemanticTokensRefresh      = "workspace/semanticTokens/refresh"
+  show TextDocumentLinkedEditingRange      = "textDocument/linkedEditingRange"
+  show TextDocumentMoniker                 = "textDocument/moniker"
+  show LogTrace                            = "$/logTrace"
+  show WindowShowMessage                   = "window/showMessage"
+  show WindowShowMessageRequest            = "window/showMessageRequest"
+  show WindowShowDocument                  = "window/showDocument"
+  show WindowLogMessage                    = "window/logMessage"
+  show WindowWorkDoneProgressCreate        = "window/workDoneProgress/create"
+  show TelemetryEvent                      = "telemetry/event"
+  show ClientRegisterCapability            = "client/registerCapability"
+  show ClientUnregisterCapability          = "client/unregisterCapability"
+  show WorkspaceWorkspaceFolders           = "workspace/workspaceFolders"
+  show WorkspaceConfiguration              = "workspace/configuration"
+  show WorkspaceApplyEdit                  = "workspace/applyEdit"
+  show TextDocumentPublishDiagnostics      = "textDocument/publishDiagnostics"
+  show TextDocumentCompletion              = "textDocument/completion"
+  show WorkspaceCodeLensRefresh            = "workspace/codeLens/refresh"
+  show CancelRequest                       = "$/cancelRequest"
+  show Progress                            = "$/progress"
+
+export
 ToJSON (Method type from) where
-  toJSON Initialize                          = JString "initialize"
-  toJSON Initialized                         = JString "initialized"
-  toJSON Shutdown                            = JString "shutdown"
-  toJSON Exit                                = JString "exit"
-  toJSON SetTrace                            = JString "$/setTrace"
-  toJSON WindowWorkDoneProgressCancel        = JString "window/workDoneProgress/cancel"
-  toJSON WorkspaceDidChangeWorkspaceFolders  = JString "workspace/didChangeWorkspaceFolders"
-  toJSON WorkspaceDidChangeConfiguration     = JString "workspace/didChangeConfiguration"
-  toJSON WorkspaceDidChangeWatchedFiles      = JString "workspace/didChangeWatchedFiles"
-  toJSON WorkspaceSymbol                     = JString "workspace/symbol"
-  toJSON WorkspaceExecuteCommand             = JString "workspace/executeCommand"
-  toJSON WorkspaceWillCreateFiles            = JString "workspace/willCreateFiles"
-  toJSON TextDocumentDidOpen                 = JString "textDocument/didOpen"
-  toJSON TextDocumentDidChange               = JString "textDocument/didChange"
-  toJSON TextDocumentWillSave                = JString "textDocument/willSave"
-  toJSON TextDocumentWillSaveWaitUntil       = JString "textDocument/willSaveWaitUntil"
-  toJSON TextDocumentDidSave                 = JString "textDocument/didSave"
-  toJSON TextDocumentDidClose                = JString "textDocument/didClose"
-  toJSON CompletionItemResolve               = JString "completionItem/resolve"
-  toJSON TextDocumentHover                   = JString "textDocument/hover"
-  toJSON TextDocumentSignatureHelp           = JString "textDocument/signatureHelp"
-  toJSON TextDocumentDeclaration             = JString "textDocument/declaration"
-  toJSON TextDocumentDefinition              = JString "textDocument/definition"
-  toJSON TextDocumentTypeDefinition          = JString "textDocument/typeDefinition"
-  toJSON TextDocumentImplementation          = JString "textDocument/implementation"
-  toJSON TextDocumentReferences              = JString "textDocument/references"
-  toJSON TextDocumentDocumentHighlight       = JString "textDocument/documentHighlight"
-  toJSON TextDocumentDocumentSymbol          = JString "textDocument/documentSymbol"
-  toJSON TextDocumentCodeAction              = JString "textDocument/codeAction"
-  toJSON CodeActionResolve                   = JString "codeAction/resolve"
-  toJSON TextDocumentCodeLens                = JString "textDocument/codeLens"
-  toJSON CodeLensResolve                     = JString "codeLens/resolve"
-  toJSON TextDocumentDocumentLink            = JString "textDocument/documentLink"
-  toJSON DocumentLinkResolve                 = JString "documentLink/resolve"
-  toJSON TextDocumentDocumentColor           = JString "textDocument/documentColor"
-  toJSON TextDocumentFormatting              = JString "textDocument/formatting"
-  toJSON TextDocumentRangeFormatting         = JString "textDocument/rangeFormatting"
-  toJSON TextDocumentOnTypeFormatting        = JString "textDocument/onTypeFormatting"
-  toJSON TextDocumentRename                  = JString "textDocument/rename"
-  toJSON TextDocumentPrepareRename           = JString "textDocument/prepareRename"
-  toJSON TextDocumentFoldingRange            = JString "textDocument/foldingRange"
-  toJSON TextDocumentSelectionRange          = JString "textDocument/selectionRange"
-  toJSON TextDocumentPrepareCallHierarchy    = JString "textDocument/prepareCallHierarchy"
-  toJSON CallHierarchyIncomingCalls          = JString "callHierarchy/incomingCalls"
-  toJSON CallHierarchyOutgoingCalls          = JString "callHierarchy/outgoingCalls"
-  toJSON TextDocumentSemanticTokensFull      = JString "textDocument/semanticTokens/full"
-  toJSON TextDocumentSemanticTokensFullDelta = JString "textDocument/semanticTokens/full/delta"
-  toJSON TextDocumentSemanticTokensRange     = JString "textDocument/semanticTokens/range"
-  toJSON WorkspaceSemanticTokensRefresh      = JString "workspace/semanticTokens/refresh"
-  toJSON TextDocumentLinkedEditingRange      = JString "textDocument/linkedEditingRange"
-  toJSON TextDocumentMoniker                 = JString "textDocument/moniker"
-  toJSON LogTrace                            = JString "$/logTrace"
-  toJSON WindowShowMessage                   = JString "window/showMessage"
-  toJSON WindowShowMessageRequest            = JString "window/showMessageRequest"
-  toJSON WindowShowDocument                  = JString "window/showDocument"
-  toJSON WindowLogMessage                    = JString "window/logMessage"
-  toJSON WindowWorkDoneProgressCreate        = JString "window/workDoneProgress/create"
-  toJSON TelemetryEvent                      = JString "telemetry/event"
-  toJSON ClientRegisterCapability            = JString "client/registerCapability"
-  toJSON ClientUnregisterCapability          = JString "client/unregisterCapability"
-  toJSON WorkspaceWorkspaceFolders           = JString "workspace/workspaceFolders"
-  toJSON WorkspaceConfiguration              = JString "workspace/configuration"
-  toJSON WorkspaceApplyEdit                  = JString "workspace/applyEdit"
-  toJSON TextDocumentPublishDiagnostics      = JString "textDocument/publishDiagnostics"
-  toJSON TextDocumentCompletion              = JString "textDocument/completion"
-  toJSON WorkspaceCodeLensRefresh            = JString "workspace/codeLens/refresh"
-  toJSON CancelRequest                       = JString "$/cancelRequest"
-  toJSON Progress                            = JString "$/progress"
+  toJSON = JString . show
 
 export
 FromJSON (Method Client Notification) where
@@ -246,7 +248,7 @@ FromJSON (Method Client Notification) where
   fromJSON (JString "textDocument/didClose")               = pure TextDocumentDidClose
   fromJSON (JString "$/cancelRequest")                     = pure CancelRequest
   fromJSON (JString "$/progress")                          = pure Progress
-  fromJSON _ = neutral
+  fromJSON x = fail "invalid client notification: \{encode x}"
 
 export
 FromJSON (Method Client Request) where
@@ -289,7 +291,7 @@ FromJSON (Method Client Request) where
   fromJSON (JString "textDocument/semanticTokens/range")      = pure TextDocumentSemanticTokensRange
   fromJSON (JString "textDocument/linkedEditingRange")        = pure TextDocumentLinkedEditingRange
   fromJSON (JString "textDocument/moniker")                   = pure TextDocumentMoniker
-  fromJSON _ = neutral
+  fromJSON x = fail "invalid client request: \{encode x}"
 
 export
 FromJSON (Method Server Notification) where
@@ -300,7 +302,7 @@ FromJSON (Method Server Notification) where
   fromJSON (JString "textDocument/publishDiagnostics") = pure TextDocumentPublishDiagnostics
   fromJSON (JString "$/cancelRequest")                 = pure CancelRequest
   fromJSON (JString "$/progress")                      = pure Progress
-  fromJSON _ = neutral
+  fromJSON x = fail "invalid server notification: \{encode x}"
 
 export
 FromJSON (Method Server Request) where
@@ -314,24 +316,26 @@ FromJSON (Method Server Request) where
   fromJSON (JString "workspace/applyEdit")              = pure WorkspaceApplyEdit
   fromJSON (JString "workspace/codeLens/refresh")       = pure WorkspaceCodeLensRefresh
   fromJSON (JString "workspace/semanticTokens/refresh") = pure WorkspaceSemanticTokensRefresh
-  fromJSON _ = neutral
+  fromJSON x = fail "invalid server request \{encode x}"
 
 export
 FromJSON (from ** Method from Notification) where
   fromJSON arg =
-    (fromJSON arg >>= \meth : Method Client Notification => pure (_ ** meth))
-      <|> (fromJSON arg >>= \meth : Method Server Notification => pure (_ ** meth))
+    (fromJSON arg >>= \meth : Method Client Notification => pure (Client ** meth))
+      `orElse` (fromJSON arg >>= \meth : Method Server Notification => pure (Server ** meth))
 
 export
 FromJSON (from ** Method from Request) where
   fromJSON arg =
     (fromJSON arg >>= \meth : Method Client Request => pure (_ ** meth))
-      <|> (fromJSON arg >>= \meth : Method Server Request => pure (_ ** meth))
+      `orElse` (fromJSON arg >>= \meth : Method Server Request => pure (_ ** meth))
+
+private infixl 5 `orElse`
 
 export
 FromJSON (from ** type ** Method from type) where
   fromJSON arg =
     (fromJSON arg >>= \meth : Method Client Notification => pure (_ ** _ ** meth))
-      <|> (fromJSON arg >>= \meth : Method Client Request => pure (_ ** _ ** meth))
-      <|> (fromJSON arg >>= \meth : Method Server Notification => pure (_ ** _ ** meth))
-      <|> (fromJSON arg >>= \meth : Method Server Request => pure (_ ** _ ** meth))
+      `orElse` (fromJSON arg >>= \meth : Method Client Request => pure (_ ** _ ** meth))
+      `orElse` (fromJSON arg >>= \meth : Method Server Notification => pure (_ ** _ ** meth))
+      `orElse` (fromJSON arg >>= \meth : Method Server Request => pure (_ ** _ ** meth))

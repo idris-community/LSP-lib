@@ -1,7 +1,5 @@
 module Language.LSP.Message.Moniker
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Location
 import Language.LSP.Message.Progress
 import Language.LSP.Message.TextDocument
@@ -10,20 +8,21 @@ import Language.Reflection
 
 %language ElabReflection
 %default total
+%hide Text.Bounds.Position
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
 public export
 record MonikerClientCapabilities where
   constructor MkMonikerClientCapabilities
   dynamicRegistration : Maybe Bool
-%runElab deriveJSON defaultOpts `{MonikerClientCapabilities}
+%runElab derive "MonikerClientCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
 public export
 record MonikerOptions where
   constructor MkMonikersOptions
   workDoneProgress : Maybe Bool
-%runElab deriveJSON defaultOpts `{MonikerOptions}
+%runElab derive "MonikerOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
 public export
@@ -31,7 +30,7 @@ record MonikerRegistrationOptions where
   constructor MkMonikersRegistrationOptions
   workDoneProgress : Maybe Bool
   documentSelector : OneOf [DocumentSelector, Null]
-%runElab deriveJSON defaultOpts `{MonikerRegistrationOptions}
+%runElab derive "MonikerRegistrationOptions" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
 public export
@@ -40,8 +39,8 @@ record MonikerParams where
   workDoneToken      : Maybe ProgressToken
   partialResultToken : Maybe ProgressToken
   textDocument       : TextDocumentIdentifier
-  position           : Position
-%runElab deriveJSON defaultOpts `{MonikerParams}
+  position           : Location.Position
+%runElab derive "MonikerParams" [FromJSONLSP, ToJSONLSP]
 
 namespace UniquenessLevel
   ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
@@ -63,7 +62,7 @@ FromJSON UniquenessLevel where
   fromJSON (JString "group") = pure Group
   fromJSON (JString "scheme") = pure Scheme
   fromJSON (JString "global") = pure Global
-  fromJSON _ = neutral
+  fromJSON _ = fail "invalid uniqueness level, document|project|group|scheme|global"
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
 namespace MonikerKind
@@ -81,7 +80,7 @@ FromJSON MonikerKind where
   fromJSON (JString "import") = pure Import
   fromJSON (JString "export") = pure Export
   fromJSON (JString "local")  = pure Local
-  fromJSON _ = neutral
+  fromJSON _ = fail "invalid moniker, import|export|local"
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#textDocument_moniker
 public export
@@ -91,4 +90,4 @@ record Moniker where
   identifier : String
   unique     : UniquenessLevel
   kind       : Maybe MonikerKind
-%runElab deriveJSON defaultOpts `{Moniker}
+%runElab derive "Moniker" [FromJSONLSP, ToJSONLSP]

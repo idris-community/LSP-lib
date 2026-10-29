@@ -1,7 +1,5 @@
 module Language.LSP.Message.RegularExpressions
 
-import Language.JSON
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Utils
 import Language.Reflection
 
@@ -14,4 +12,4 @@ record RegularExpressionsClientCapabilities where
   constructor MkRegularExpressionsClientCapabilities
   engine  : String
   version : Maybe String
-%runElab deriveJSON defaultOpts `{RegularExpressionsClientCapabilities}
+%runElab derive "RegularExpressionsClientCapabilities" [FromJSONLSP, ToJSONLSP]

@@ -1,7 +1,6 @@
 module Language.LSP.Message.ServerCapabilities
 
 import Data.SortedMap
-import Language.JSON
 import Language.LSP.Message.CallHierarchy
 import Language.LSP.Message.Cancel
 import Language.LSP.Message.CodeAction
@@ -10,7 +9,6 @@ import Language.LSP.Message.Command
 import Language.LSP.Message.Completion
 import Language.LSP.Message.Declaration
 import Language.LSP.Message.Definition
-import Language.LSP.Message.Derive
 import Language.LSP.Message.Diagnostics
 import Language.LSP.Message.DocumentColor
 import Language.LSP.Message.DocumentFormatting
@@ -53,7 +51,7 @@ record FileOperationsServerCapabilities where
   willRename : Maybe FileOperationRegistrationOptions
   didDelete  : Maybe FileOperationRegistrationOptions
   willDelete : Maybe FileOperationRegistrationOptions
-%runElab deriveJSON defaultOpts `{FileOperationsServerCapabilities}
+%runElab derive "FileOperationsServerCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -61,7 +59,7 @@ record WorkspaceServerCapabilities where
   constructor MkWorkspaceServerCapabilities
   workspaceFolders : Maybe WorkspaceFoldersServerCapabilities
   fileOperations   : Maybe FileOperationsServerCapabilities
-%runElab deriveJSON defaultOpts `{WorkspaceServerCapabilities}
+%runElab derive "WorkspaceServerCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -96,7 +94,7 @@ record ServerCapabilities where
   workspaceSymbolProvider          : Maybe (OneOf [Bool, WorkspaceSymbolOptions])
   workspace                        : Maybe WorkspaceServerCapabilities
   experimental                     : Maybe JSON
-%runElab deriveJSON defaultOpts `{ServerCapabilities}
+%runElab derive "ServerCapabilities" [FromJSONLSP, ToJSONLSP]
 
 ||| Refer to https://microsoft.github.io/language-server-protocol/specification.html#initialize
 public export
@@ -104,4 +102,4 @@ record ServerInfo where
   constructor MkServerInfo
   name    : String
   version : Maybe String
-%runElab deriveJSON defaultOpts `{ServerInfo}
+%runElab derive "ServerInfo" [FromJSONLSP, ToJSONLSP]
